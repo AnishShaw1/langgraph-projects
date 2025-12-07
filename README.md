@@ -5,10 +5,6 @@ Supports persistent multi-thread conversations with tool usage, dialog popups, a
 
 ---
 
-## 🚀 Live Demo
-
-_Add your deployment link here_
-
 ---
 
 ## 📌 Features
