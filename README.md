@@ -1,97 +1,87 @@
-🌟 LangGraph Chatbot (Streamlit + SQLite + Gemini Tools)
+# 🌟 LangGraph Chatbot (Streamlit + SQLite + Gemini Tools)
 
-A modern AI-powered chatbot built using LangGraph, Google Gemini, Streamlit, and SQLite, supporting persistent multi-thread conversations with tool usage, dialog popups, and streaming responses — similar to ChatGPT.
+A modern AI-powered chatbot built with **LangGraph**, **Google Gemini**, **Streamlit**, and **SQLite**.  
+Supports persistent multi-thread conversations with tool usage, dialog popups, and streaming responses — simple, extensible, and production-ready!
 
-🚀 Live Demo
+---
 
-Add your deployment link here
+## 🚀 Live Demo
 
-📌 Features
-💬 Multi-Thread Chat System
+_Add your deployment link here_
 
-Create unlimited chat threads
+---
 
-Persistent storage using SQLite
+## 📌 Features
 
-Restore conversations instantly
+### 💬 Multi-Thread Chat System
+- Unlimited chat threads
+- Persistent storage using SQLite
+- Instant restoration of conversations
+- Auto-generated short titles
 
-Auto-generated short titles
+### 🧠 LangGraph Stateful Conversation Engine
+- Custom workflow:  
+  `START → chat_node → (tools?) → chat_node → END`
+- Automatic message persistence
+- State restored via SQLite checkpoints
+- Tool routing based on LLM logic
 
-🧠 LangGraph Stateful Conversation Engine
+### 🔧 Built-in Tools
 
-Powered by a custom LangGraph workflow:
+| Tool                 | Purpose                |
+|----------------------|------------------------|
+| 🔍 DuckDuckGo Search | Real-time search       |
+| ➗ Calculator        | Math operations        |
+| 📈 Stock API         | Live stock prices      |
 
-START → chat_node → (tools?) → chat_node → END
+### 🎨 Modern Streamlit UI
+- Smooth streaming responses
+- Tool-activity status indicator
+- Clean UI (ToolMessages hidden in history)
+- Popup dialogs for Rename & Delete
+- Arrow indicator for active thread
 
+### 🤖 Dual-LLM Architecture
+- **Gemini 2.5 Flash:** Main conversation model
+- **Gemini 2.0 Flash:** Lightweight auto-title generator _(avoids rate-limits)_
 
-Automatic message persistence
+### 🛠️ Tech Stack
+- **Frontend:** Streamlit
+- **Backend:** LangGraph + LangChain
+- **LLM:** Google Gemini Flash
+- **Tools:** Search, Calculator, Stock API
+- **Database:** SQLite
+- **State Management:** LangGraph Checkpointer
 
-State restored via SQLite checkpoints
+---
 
-Tool routing based on LLM decisions
+## 🏗️ Architecture Overview
 
-🔧 Built-in Tools
-Tool	Purpose
-🔍 DuckDuckGo Search	Real-time search
-➗ Calculator	Math operations
-📈 Stock API	Live stock prices
-🎨 Modern Streamlit UI
+```mermaid
+flowchart TD
+    User
+    User -->|interacts| Streamlit_UI
+    Streamlit_UI -->|request with thread_id| LangGraph_Backend
+    LangGraph_Backend -->|conversation| chat_node
+    chat_node -->|optional| tool_node
+    tool_node --> chat_node
+    LangGraph_Backend --> SQLite_Database
+```
 
-Smooth streaming responses
+- **User**
+    - ↓
+- **Streamlit UI (frontend)**
+    - ↓ request with thread_id
+- **LangGraph Backend (chatbot)**
+    - `chat_node → tool_node → chat_node`
+    - ↓
+- **SQLite Database (persistent)**
 
-Tool-activity status indicator
+---
 
-Clean UI (ToolMessages hidden in history)
+## 📁 Project Structure
 
-Popup dialogs for Rename & Delete
-
-Arrow indicator for active thread
-
-🤖 Dual-LLM Architecture
-
-Gemini 2.5 Flash → main conversation model
-
-Gemini 2.0 Flash → lightweight auto-title generator
-(prevents rate-limit errors)
-
-🛠️ Tech Stack
-
-Frontend: Streamlit
-
-Backend: LangGraph + LangChain
-
-LLM: Google Gemini Flash
-
-Tools: Search, Calculator, Stock API
-
-Database: SQLite
-
-State Management: LangGraph Checkpointer
-
-🏗️ Architecture Overview
-User
-  │
-  ▼
-───────────────────────────────
- Streamlit UI (frontend)
-───────────────────────────────
-  │
-  ▼ request with thread_id
-───────────────────────────────
- LangGraph Backend (chatbot)
-───────────────────────────────
- chat_node → tool_node → chat_node
-───────────────────────────────
-  │
-  ▼
-───────────────────────────────
- SQLite Database (persistent)
-───────────────────────────────
-
-📁 Project Structure
-
-Only these files are required:
-
+```
 project/
 │── frontend_latest.py     # Streamlit UI
 │── backend_latest.py      # LangGraph backend engine
@@ -100,162 +90,118 @@ project/
 │── chat_titles.json       # Local title cache
 │── .env                   # API keys (Gemini, Stock API)
 │── README.md              # This file
+```
 
-⚙️ Installation
-1️⃣ Clone repo
-git clone https://github.com/AnishShaw1/langgraph-projects
-cd langgraph-projects
+---
 
-2️⃣ Create virtual environment
-python -m venv env
-env\Scripts\activate      # Windows
-source env/bin/activate   # Mac/Linux
+## ⚙️ Installation
 
-3️⃣ Install dependencies
-pip install -r requirements.txt
+1. **Clone repo**
+    ```bash
+    git clone https://github.com/AnishShaw1/langgraph-projects
+    cd langgraph-projects
+    ```
+2. **Create virtual environment**
+    ```bash
+    python -m venv env
+    # Windows
+    env\Scripts\activate
+    # Mac/Linux
+    source env/bin/activate
+    ```
+3. **Install dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
+4. **Add .env file**
+    ```
+    GEMINI_API_KEY=your_key
+    ALPHAVANTAGE_API_KEY=your_key
+    ```
+5. **Run app**
+    ```bash
+    streamlit run frontend_latest.py
+    ```
 
-4️⃣ Add .env file
-GEMINI_API_KEY=your_key
-ALPHAVANTAGE_API_KEY=your_key
+---
 
-5️⃣ Run app
-streamlit run frontend_latest.py
-
-🗃️ Database Details (SQLite)
+## 🗃️ Database Details (SQLite)
 
 LangGraph automatically generates:
 
-1. checkpoints table
+### 1. `checkpoints` table
+- Stores:
+    - message history
+    - state metadata
+    - transitions
 
-Stores:
+### 2. `writes` table
+- Stores:
+    - tool results
+    - tool execution logs
 
-message history
+#### Chat Identification
+- Each chat: `thread_id = UUID`
 
-state metadata
+---
 
-transitions
+## ⚠️ Limitations
 
-2. writes table
+1. **SQLite Scaling Limits**
+    - Good for local/single-user
+    - Not suitable for:
+        - high traffic
+        - many users
+        - concurrent writes
+    - _Production recommendation: PostgreSQL + PGVector or ChromaDB._
 
-Stores:
+2. **No User Authentication**
+    - Single-user only
+    - Public deployment: All users see the same threads
+    - _Multi-user: Use FastAPI + JWT + DB._
 
-tool results
+3. **No RAG (Retrieval-Augmented Generation)**
+    - Missing:
+        - PDF upload
+        - text chunking
+        - embeddings
+        - vector search
+    - _Solution: Add FAISS/Chroma + LangGraph retrieval node._
 
-tool execution logs
+4. **Gemini Free-Tier Rate Limits**
+    - 10 requests/min
+    - Search tool increases usage
+    - Using second model (`llm1`) reduces title-generation pressure
 
-Each chat is identified using:
+5. **Streamlit is not a backend**
+    - Cannot handle:
+        - authentication
+        - multi-user concurrency
+        - secure APIs
+    - _Recommended: Use Streamlit only as UI for production._
 
-thread_id = UUID
+---
 
-⚠️ Limitations
-1️⃣ SQLite Scaling Limits
+## 🚀 Future Improvements
 
-Good for local/single-user use, but not for:
+| Improvement                | Description                                      |
+|----------------------------|--------------------------------------------------|
+| 🌟 Multi-User Accounts     | FastAPI backend,<br>JWT login,<br>per-user threads,<br>secure roles |
+| 🌟 Add RAG Workflow        | PDF upload,<br>embeddings,<br>vector search,<br>LangGraph retrieval |
+| 🌟 Migrate to PostgreSQL   | Large datasets,<br>concurrency,<br>multi-user platforms|
+| 🌟 Enhanced Tool UI        | Dedicated tool output cards,<br>search visualization|
+| 🌟 Cloud Deployment        | Backend: FastAPI(Railway/Render)<br>DB: PostgreSQL/Neon<br>Frontend: Streamlit Cloud<br>File Storage: Supabase|
 
-high traffic
+---
 
-many users
+## ⭐ Final Notes
 
-concurrent writes
+This project is a complete example of combining:
 
-➡️ For production: PostgreSQL + PGVector or ChromaDB.
+- ✔ **LangGraph**
+- ✔ **Gemini Flash**
+- ✔ **LangChain Tools**
+- ✔ **SQLite persistence**
+- ✔ **Streamlit UI**
 
-2️⃣ No User Authentication
-
-This project is single-user only.
-
-If deployed publicly:
-
-every visitor sees the same chat threads
-
-➡️ Multi-user requires FastAPI + JWT + DB.
-
-3️⃣ No RAG (Retrieval-Augmented Generation)
-
-Currently lacks:
-
-PDF upload
-
-text chunking
-
-embeddings
-
-vector search
-
-➡️ Can be added using FAISS / Chroma + a retrieval node in LangGraph.
-
-4️⃣ Gemini Free-Tier Rate Limits
-
-10 requests/min
-
-search tool increases usage
-
-Using a second model (llm1) reduces title-generation pressure.
-
-5️⃣ Streamlit is not a backend
-
-Streamlit cannot handle:
-
-real authentication
-
-multi-user concurrency
-
-secure APIs
-
-➡️ Should be UI only for production-level apps.
-
-🚀 Future Improvements
-🌟 Multi-User Accounts
-
-Using FastAPI backend:
-
-JWT login
-
-per-user threads
-
-secure role-based access
-
-🌟 Add RAG Workflow
-
-Upload PDFs
-
-Generate embeddings
-
-Store vectors
-
-Retrieve context in LangGraph
-
-🌟 Migrate to PostgreSQL
-
-handles large datasets
-
-supports concurrency
-
-ideal for multi-user platforms
-
-🌟 Enhanced Tool UI
-
-dedicated tool output cards
-
-better search visualization
-
-🌟 Cloud Deployment
-
-Recommended stack:
-
-Component	Platform
-Backend	FastAPI on Railway/Render
-DB	PostgreSQL / Neon
-Frontend	Streamlit Cloud
-File Storage	Supabase
-⭐ Final Notes
-
-This project is a complete example of how to combine:
-
-✔ LangGraph
-✔ Gemini Flash
-✔ LangChain Tools
-✔ SQLite persistence
-✔ Streamlit UI
-
-into a clean, functional, ChatGPT-like chatbot with tool support.
+_into a clean, functional, ChatGPT-like chatbot with tool support._
